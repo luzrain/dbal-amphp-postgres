@@ -1,0 +1,34 @@
+{
+  "name": "luzrain/dbal-amphp-postgres",
+  "description": "Async Doctrine DBAL driver for AMPHP Postgres client",
+  "keywords": ["postgresql", "async", "doctrine", "database", "dbal", "driver", "amphp"],
+  "homepage": "https://github.com/luzrain/dbal-amphp-postgres",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Anton Zenkov",
+      "email": "anton.z@live.com",
+      "homepage": "https://github.com/luzrain/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "amphp/postgres": "^2.1",
+    "doctrine/dbal": "^4.3",
+    "revolt/event-loop": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Luzrain\\DbalDriver\\AmphpPostgres\\": "src"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.85",
+    "vimeo/psalm": "^6.13"
+  }
+}
