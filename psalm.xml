@@ -16,4 +16,10 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <RedundantPropertyInitializationCheck errorLevel="suppress" />
+        <MissingConstructor errorLevel="suppress" />
+        <DeprecatedMethod errorLevel="suppress" />
+        <PropertyNotSetInConstructor errorLevel="suppress" />
+    </issueHandlers>
 </psalm>

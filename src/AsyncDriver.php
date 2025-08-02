@@ -43,7 +43,7 @@ final class AsyncDriver extends AbstractPostgreSQLDriver
 
         $push = $this->push;
         $postgresConnection = ($this->pop)();
-        $releaseConnection = static function () use($push, $postgresConnection): void {
+        $releaseConnection = static function () use ($push, $postgresConnection): void {
             $push($postgresConnection);
         };
         self::$releaseCallback->offsetSet($postgresConnection, $releaseConnection);
@@ -67,13 +67,16 @@ final class AsyncDriver extends AbstractPostgreSQLDriver
         );
 
         $this->pop = (function (): PostgresConnection {
+            /** @psalm-suppress UndefinedMethod */
             return $this->pop();
         })->bindTo($pool, $pool);
 
         $this->push = (function (PostgresConnection $connection): void {
+            /** @psalm-suppress UndefinedMethod */
             $this->push($connection);
         })->bindTo($pool, $pool);
 
+        /** @psalm-suppress PropertyTypeCoercion */
         self::$releaseCallback ??= new \WeakMap();
     }
 
@@ -82,6 +85,7 @@ final class AsyncDriver extends AbstractPostgreSQLDriver
      */
     public static function releaseConnection(PostgresConnection $postgresConnection): void
     {
+        /** @psalm-suppress PossiblyNullArgument */
         EventLoop::defer(self::$releaseCallback->offsetGet($postgresConnection));
         self::$releaseCallback->offsetUnset($postgresConnection);
     }

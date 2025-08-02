@@ -16,6 +16,7 @@ final readonly class Connection implements DriverConnection
 
     public function prepare(string $sql): Statement
     {
+        /** @psalm-suppress InvalidArgument */
         return new Statement($this->connection->prepare($sql));
     }
 
@@ -49,7 +50,7 @@ final readonly class Connection implements DriverConnection
     public function exec(string $sql): int
     {
         try {
-            return $this->connection->query($sql)->getRowCount();
+            return $this->connection->query($sql)->getRowCount() ?? 0;
         } catch (\Throwable $e) {
             throw new Exception($e);
         }
@@ -65,6 +66,7 @@ final readonly class Connection implements DriverConnection
             return $this->query('SELECT LASTVAL()')->fetchOne();
         } catch (Exception $exception) {
             if ($exception->getSQLState() === '55000') {
+                /** @psalm-suppress InternalClass, InternalMethod */
                 throw NoIdentityValue::new($exception);
             }
 

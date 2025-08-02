@@ -19,14 +19,19 @@ use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\TransactionIsolationLevel;
 use Revolt\EventLoop\FiberLocal;
 
-class AsyncConection extends DbalConnection
+final class AsyncConection extends DbalConnection
 {
     private FiberLocal $fiberLocal;
     private DbalConnection $baseConnection;
     private AbstractPlatform $databasePlatform;
 
-    public function __construct(#[\SensitiveParameter] array $params, Driver $driver, Configuration|null $config = null) {
-        $this->fiberLocal = new FiberLocal(static fn () => null);
+    /**
+     * @internal The connection can be only instantiated by the driver manager.
+     * @psalm-suppress InternalMethod
+     */
+    public function __construct(#[\SensitiveParameter] array $params, Driver $driver, Configuration|null $config = null)
+    {
+        $this->fiberLocal = new FiberLocal(static fn() => null);
         $this->driver = $driver;
         $this->baseConnection = new DbalConnection($params, $driver, $config);
         // skip parent constructor
@@ -37,7 +42,7 @@ class AsyncConection extends DbalConnection
         $wrapper = $this->fiberLocal->get();
 
         if ($wrapper === null) {
-            $wrapper = new class(clone $this->baseConnection) {
+            $wrapper = new class (clone $this->baseConnection) {
                 public function __construct(public readonly DbalConnection $connection)
                 {
                 }
@@ -56,6 +61,10 @@ class AsyncConection extends DbalConnection
         return $wrapper->connection;
     }
 
+    /**
+     * @internal
+     * @psalm-suppress InternalMethod
+     */
     public function getParams(): array
     {
         return $this->baseConnection->getParams();

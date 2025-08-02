@@ -89,7 +89,9 @@ final class Result implements ResultInterface
     {
         $rows = [];
         while (null !== $row = $this->fetchRow()) {
-            $rows[] = $row[\array_key_first($row)];
+            if ($row !== []) {
+                $rows[] = $row[\array_key_first($row)];
+            }
         }
 
         return $rows;
@@ -107,9 +109,9 @@ final class Result implements ResultInterface
 
     public function getColumnName(int $index): string
     {
-        if ($this->columnNames === null) {
-            $this->firstRowCache = $this->result->fetchRow();
-            $this->columnNames = \array_keys($this->firstRowCache);
+        if ($this->columnNames === null && null !== $firstRowCache = $this->result->fetchRow()) {
+            $this->firstRowCache = $firstRowCache;
+            $this->columnNames = \array_keys($firstRowCache);
         }
 
         return $this->columnNames[$index] ?? throw InvalidColumnIndex::new($index);

@@ -15,6 +15,7 @@ final class Exception extends AbstractException
     public function __construct(\Throwable $previous)
     {
         if ($previous instanceof PostgresQueryError) {
+            /** @var string|null $sqlState */
             $sqlState = $previous->getDiagnostics()['sqlstate'] ?? null;
             $message = $sqlState === null ? $previous->getMessage() : \sprintf('SQLSTATE[%s]: %s', $sqlState, $previous->getMessage());
         } else {
