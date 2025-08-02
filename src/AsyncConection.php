@@ -26,7 +26,7 @@ final class AsyncConection extends DbalConnection
 {
     private FiberLocal $fiberLocal;
     private DbalConnection $baseConnection;
-    private AbstractPlatform $databasePlatform;
+    private bool $databasePlatformCached = false;
 
     /**
      * @internal The connection can be only instantiated by the driver manager.
@@ -93,10 +93,21 @@ final class AsyncConection extends DbalConnection
 
     /**
      * @throws Exception
+     * @psalm-suppress UndefinedThisPropertyAssignment, PossiblyNullFunctionCall
      */
     public function getDatabasePlatform(): AbstractPlatform
     {
-        return $this->databasePlatform ??= $this->getOrCreateConnection()->getDatabasePlatform();
+        $databasePlatform = $this->getOrCreateConnection()->getDatabasePlatform();
+
+        if (!$this->databasePlatformCached) {
+            (function () use ($databasePlatform) {
+                $this->platform = $databasePlatform;
+            })->bindTo($this->baseConnection, $this->baseConnection)();
+
+            $this->databasePlatformCached = true;
+        }
+
+        return $databasePlatform;
     }
 
     public function createExpressionBuilder(): ExpressionBuilder
